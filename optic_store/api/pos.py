@@ -11,7 +11,7 @@ from frappe.utils.nestedset import get_root_of
 from erpnext.stock.get_item_details import get_pos_profile
 from erpnext.accounts.doctype.pos_profile.pos_profile import get_item_groups
 from erpnext.selling.page.point_of_sale.point_of_sale import (
-    search_serial_or_batch_or_barcode_number,
+    search_for_serial_or_batch_or_barcode_number,
 )
 from erpnext.accounts.doctype.sales_invoice.pos import get_customers_list
 from erpnext.accounts.doctype.sales_invoice.pos import get_customer_id
@@ -247,7 +247,7 @@ def get_items(
 ):
     debug = frappe.db.get_single_value("Optical Store Settings", "debug_query")
     search_data = (
-        search_serial_or_batch_or_barcode_number(search_value) if search_value else {}
+        search_for_serial_or_batch_or_barcode_number(search_value) if search_value else {}
     )
     clauses, values = _get_conditions(
         merge(

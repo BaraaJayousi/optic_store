@@ -9,7 +9,7 @@ from frappe import _
 from frappe.utils import nowdate, nowtime, cint
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import make_delivery_note
 from erpnext.selling.page.point_of_sale.point_of_sale import (
-    search_serial_or_batch_or_barcode_number as search_item,
+    search_for_serial_or_batch_or_barcode_number as search_item,
 )
 from six import string_types
 from functools import partial, reduce
@@ -212,7 +212,7 @@ def _get_account(mode_of_payment, company):
 
 
 @frappe.whitelist()
-def search_serial_or_batch_or_barcode_number(search_value):
+def search_for_serial_or_batch_or_barcode_number(search_value):
     return (
         frappe.db.get_value("Item", search_value, ["name as item_code"], as_dict=True)
         or search_item(search_value)
