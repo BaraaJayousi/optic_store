@@ -268,7 +268,7 @@ app_include_js = "optic_store.bundle.js"
 # web_include_js = "/assets/optic_store/js/optic_store.js"
 
 # include js in page
-page_js = {"pos": "public/js/pos.js", "point-of-sale": "public/js/point_of_sale.js"}
+page_js = {"pos": "public/js/pos.js", "point-of-sale": "public/js/point_of_sale_ext.js"}
 
 # include js in doctype views
 doctype_js = {

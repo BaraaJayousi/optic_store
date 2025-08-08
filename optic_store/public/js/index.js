@@ -39,16 +39,33 @@ frappe.ui.form.on('Item', item);
 frappe.ui.form.on('Salary Slip', salary_slip);
 frappe.ui.form.on('Payroll Entry', payroll_entry);
 
-if (frappe.ui.form.CustomerQuickEntryForm) {
-  frappe.ui.form.CustomerQuickEntryForm = frappe.ui.form.CustomerQuickEntryForm.extend(
+
+import { extendClass } from "./utils/extend-class";
+if (frappe?.ui?.form?.CustomerQuickEntryForm) {
+  frappe.ui.form.CustomerQuickEntryForm = extendClass(
+    frappe.ui.form.CustomerQuickEntryForm,
     customer_qe
   );
 }
+// if (frappe.ui.form.CustomerQuickEntryForm) {
+//   frappe.ui.form.CustomerQuickEntryForm = frappe.ui.form.CustomerQuickEntryForm.extend(
+//     customer_qe
+//   );
+// }
 
-frappe.ui.form.OpticalPrescriptionQuickEntryForm = frappe.ui.form.QuickEntryForm.extend(
-  optical_prescription_qe
-);
-frappe.ui.form.BatchQuickEntryForm = frappe.ui.form.QuickEntryForm.extend(batch_qe);
+// frappe.ui.form.OpticalPrescriptionQuickEntryForm = frappe.ui.form.QuickEntryForm.extend(
+//   optical_prescription_qe
+// );
+frappe.ui.form.OpticalPrescriptionQuickEntryForm = extendClass(
+    frappe.ui.form.QuickEntryForm,
+    optical_prescription_qe
+  );
+// frappe.ui.form.BatchQuickEntryForm = frappe.ui.form.QuickEntryForm.extend(batch_qe);
+
+frappe.ui.form.BatchQuickEntryForm = extendClass(
+    frappe.ui.form.QuickEntryForm,
+    batch_qe
+  );
 
 const __version__ = '0.10.6';
 

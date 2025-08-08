@@ -19065,8 +19065,8 @@ export default {
     async _get_batch_items(items, warehouse) {
       const has_batch_results = await Promise.all(items.map(({ item_code }) => frappe.db.get_value("Item", item_code, ["item_code", "has_batch_no"])));
       const batch_items = has_batch_results.map(({ message = {} }) => message).filter(({ has_batch_no }) => has_batch_no).map(({ item_code }) => item_code);
-      const rows = items.filter(({ item_code }) => batch_items.includes(item_code)).map((item) => (0, import_pick.default)(item, ["item_code", "batch_no", "qty", "name"])).map((_a) => {
-        var _b = _a, { name: si_detail } = _b, rest = __objRest(_b, ["name"]);
+      const rows = items.filter(({ item_code }) => batch_items.includes(item_code)).map((item) => (0, import_pick.default)(item, ["item_code", "batch_no", "qty", "name"])).map((_a2) => {
+        var _b2 = _a2, { name: si_detail } = _b2, rest = __objRest(_b2, ["name"]);
         return Object.assign(rest, { si_detail });
       });
       const qty_results = await Promise.all(rows.map(({ item_code, batch_no }) => batch_no ? frappe.call({
@@ -20805,8 +20805,8 @@ export default {
     make_select: () => make_select
   });
   var import_startCase = __toESM(require_startCase());
-  function make_base(fieldtype = "Data", _a) {
-    var _b = _a, { fieldname, label = null } = _b, rest = __objRest(_b, ["fieldname", "label"]);
+  function make_base(fieldtype = "Data", _a2) {
+    var _b2 = _a2, { fieldname, label = null } = _b2, rest = __objRest(_b2, ["fieldname", "label"]);
     return Object.assign({
       fieldtype,
       fieldname,
@@ -21997,6 +21997,29 @@ export default {
     paymentWithSalesPerson
   ]);
 
+  // ../optic_store/optic_store/public/js/utils/extend-class.js
+  function extendClass(Base, spec = {}) {
+    class Sub extends Base {
+      constructor(...args) {
+        super(...args);
+        if (typeof spec.init === "function") {
+          spec.init.apply(this, args);
+        }
+        this._super = (name, ...a) => Base.prototype[name].apply(this, a);
+      }
+    }
+    for (const [k, v] of Object.entries(spec)) {
+      if (k === "init")
+        continue;
+      Object.defineProperty(Sub.prototype, k, {
+        value: v,
+        writable: true,
+        configurable: true
+      });
+    }
+    return Sub;
+  }
+
   // ../optic_store/optic_store/public/js/index.js
   frappe.ui.form.on("Payment Entry", payment_entry_default);
   frappe.ui.form.on("Sales Invoice", sales_invoice_default);
@@ -22013,11 +22036,12 @@ export default {
   frappe.ui.form.on("Item", item_default);
   frappe.ui.form.on("Salary Slip", salary_slip_default);
   frappe.ui.form.on("Payroll Entry", payroll_entry_default);
-  if (frappe.ui.form.CustomerQuickEntryForm) {
-    frappe.ui.form.CustomerQuickEntryForm = frappe.ui.form.CustomerQuickEntryForm.extend(customer_qe_default);
+  var _a, _b;
+  if ((_b = (_a = frappe == null ? void 0 : frappe.ui) == null ? void 0 : _a.form) == null ? void 0 : _b.CustomerQuickEntryForm) {
+    frappe.ui.form.CustomerQuickEntryForm = extendClass(frappe.ui.form.CustomerQuickEntryForm, customer_qe_default);
   }
-  frappe.ui.form.OpticalPrescriptionQuickEntryForm = frappe.ui.form.QuickEntryForm.extend(optical_prescription_qe_default);
-  frappe.ui.form.BatchQuickEntryForm = frappe.ui.form.QuickEntryForm.extend(batch_qe_default);
+  frappe.ui.form.OpticalPrescriptionQuickEntryForm = extendClass(frappe.ui.form.QuickEntryForm, optical_prescription_qe_default);
+  frappe.ui.form.BatchQuickEntryForm = extendClass(frappe.ui.form.QuickEntryForm, batch_qe_default);
   var __version__ = "0.10.6";
   frappe.provide("optic_store");
   optic_store = {
@@ -22039,4 +22063,4 @@ export default {
  * (c) 2014-2021 Evan You
  * Released under the MIT License.
  */
-//# sourceMappingURL=optic_store.bundle.WCXVPGLK.js.map
+//# sourceMappingURL=optic_store.bundle.WFJ53QJ6.js.map
