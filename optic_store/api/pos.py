@@ -13,8 +13,8 @@ from erpnext.accounts.doctype.pos_profile.pos_profile import get_item_groups
 from erpnext.selling.page.point_of_sale.point_of_sale import (
     search_for_serial_or_batch_or_barcode_number,
 )
-from erpnext.accounts.doctype.sales_invoice.pos import get_customers_list
-from erpnext.accounts.doctype.sales_invoice.pos import get_customer_id
+# from erpnext.accounts.doctype.sales_invoice.pos import get_customers_list
+# from erpnext.accounts.doctype.sales_invoice.pos import get_customer_id
 from erpnext.accounts.doctype.loyalty_program.loyalty_program import get_loyalty_details
 from functools import partial
 from toolz import (
@@ -234,7 +234,7 @@ def _update_customer_details(customers_list):
     updater(customers_list)
     frappe.db.commit()
 
-
+'''
 @frappe.whitelist()
 def get_items(
     start,
@@ -245,6 +245,7 @@ def get_items(
     pos_profile=None,
     customer=None,
 ):
+    
     debug = frappe.db.get_single_value("Optical Store Settings", "debug_query")
     search_data = (
         search_for_serial_or_batch_or_barcode_number(search_value) if search_value else {}
@@ -374,7 +375,36 @@ def get_items(
         {"items": mapf(make_item, items)},
         pick(["barcode", "serial_no", "batch_no"], search_data),
     )
+'''
+@frappe.whitelist()
+def get_items(pos_profile, company):
+	cond = ""
+	args_list = []
+	if pos_profile.get("item_groups"):
+		# Get items based on the item groups defined in the POS profile
+		for d in pos_profile.get("item_groups"):
+			args_list.extend([d.name for d in get_child_nodes("Item Group", d.item_group)])
+		if args_list:
+			cond = "and i.item_group in (%s)" % (", ".join(["%s"] * len(args_list)))
 
+	return frappe.db.sql(
+		f"""
+		select
+			i.name, i.item_code, i.item_name, i.description, i.item_group, i.has_batch_no,
+			i.has_serial_no, i.is_stock_item, i.brand, i.stock_uom, i.image,
+			id.expense_account, id.selling_cost_center, id.default_warehouse,
+			i.sales_uom, c.conversion_factor
+		from
+			`tabItem` i
+		left join `tabItem Default` id on id.parent = i.name and id.company = %s
+		left join `tabUOM Conversion Detail` c on i.name = c.parent and i.sales_uom = c.uom
+		where
+			i.disabled = 0 and i.has_variants = 0 and i.is_sales_item = 1 and i.is_fixed_asset = 0
+			{cond}
+		""",
+		tuple([company, *args_list]),
+		as_dict=1,
+	)
 
 def _get_conditions(args_dict):
     args = frappe._dict(args_dict)
